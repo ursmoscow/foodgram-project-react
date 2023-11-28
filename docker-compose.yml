@@ -8,9 +8,7 @@ services:
       - ./.env
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ursmoscow/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
