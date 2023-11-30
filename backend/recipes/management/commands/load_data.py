@@ -27,3 +27,4 @@ class Command(BaseCommand):
                     )
                     ingredient.save()
                     print(f"Inserted: {ingredient_name} - {measurement_unit}")
+
