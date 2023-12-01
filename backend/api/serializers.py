@@ -1,6 +1,6 @@
 from djoser.serializers import UserSerializer as BaseUserSerializer
-from drf_extra_fields.fields import Base64ImageField
 from django.core.validators import MinValueValidator
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from recipes.models import (CustomUser, Favorite, Follow, Ingredient,
@@ -126,13 +126,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = ListRecipeUserSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientSerializer(many=True, read_only=True)
-    cooking_time = serializers.IntegerField(
-        validators=[MinValueValidator(1)],
-    )
 
     class Meta:
         model = Recipe
         fields = '__all__'
+
+    extra_kwargs = {
+        'cooking_time': {'validators': [MinValueValidator(1)]}
+    }
 
 
 class ShowFollowerRecipeSerializer(serializers.ModelSerializer):
