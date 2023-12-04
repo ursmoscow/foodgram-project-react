@@ -117,11 +117,13 @@ class DownloadShoppingCart(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        recipe_ids = request.user.purchases.values_list('recipe__id', flat=True)
+        recipe_ids = request.user.purchases.values_list('recipe__id',
+                                                        flat=True)
         ingredients = IngredientInRecipe.objects.filter(recipe__in=recipe_ids)
 
         if not ingredients.exists():
-            return HttpResponse("You haven't purchased any recipes.", status=400)
+            return HttpResponse("You haven't purchased any recipes.",
+                                status=400)
 
         buying_list = {}
         ingredients = ingredients.values(
