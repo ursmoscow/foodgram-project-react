@@ -117,16 +117,11 @@ class DownloadShoppingCart(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        recipe_id = request.user.purchases.values_list('recipe__id', flat=True)
-        if not recipe_id:
-            return HttpResponse("You haven't purchased any recipes.",
-                                status=400)
+        recipe_ids = request.user.purchases.values_list('recipe__id', flat=True)
+        ingredients = IngredientInRecipe.objects.filter(recipe__in=recipe_ids)
 
-        ingredients = IngredientInRecipe.objects.filter(recipe__in=recipe_id)
         if not ingredients.exists():
-            return HttpResponse("No ingredients found for",
-                                "the purchased recipes.",
-                                status=400)
+            return HttpResponse("You haven't purchased any recipes.", status=400)
 
         buying_list = {}
         ingredients = ingredients.values(
@@ -140,7 +135,8 @@ class DownloadShoppingCart(APIView):
             sum_amount = ingredient.get('sum_amount')
             name = ingredient.get('ingredient__name')
             measurement_unit = ingredient.get('ingredient__measurement_unit')
-            if name not in buying_list:
+
+            if sum_amount > 0 and name not in buying_list:
                 buying_list[name] = {
                     'measurement_unit': measurement_unit,
                     'sum_amount': sum_amount
@@ -151,6 +147,6 @@ class DownloadShoppingCart(APIView):
             wishlist.append(f'{item} - {buying_list[item]["sum_amount"]} '
                             f'{buying_list[item]["measurement_unit"]} \n')
 
-        response = HttpResponse(wishlist, 'Content-Type: text/plain')
+        response = HttpResponse(wishlist, content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename="wishlist.txt"'
         return response
