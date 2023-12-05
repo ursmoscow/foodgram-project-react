@@ -47,13 +47,12 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return context
 
     def get_queryset(self):
-        queryset = Recipe.objects.all()
-        author_id = self.kwargs.get('pk')
-
-        if author_id:
-            queryset = queryset.filter(author__id=author_id)
-
-        return queryset
+        user_id = self.kwargs.get('user_id')
+        if user_id:
+            author = get_object_or_404(CustomUser, id=user_id)
+            return Recipe.objects.filter(author=author)
+        else:
+            return Recipe.objects.all()
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
