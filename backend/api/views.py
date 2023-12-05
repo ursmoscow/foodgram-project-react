@@ -46,6 +46,15 @@ class RecipesViewSet(viewsets.ModelViewSet):
         context.update({'request': self.request})
         return context
 
+    def get_queryset(self):
+        queryset = Recipe.objects.all()
+        author_id = self.kwargs.get('pk')
+
+        if author_id:
+            queryset = queryset.filter(author__id=author_id)
+
+        return queryset
+
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
