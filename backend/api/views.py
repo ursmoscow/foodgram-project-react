@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 
 from recipes.models import (CustomUser, Favorite, Follow, Ingredient,
                             IngredientInRecipe, Recipe, ShoppingList, Tag)
+from users.models import CustomUser
 
 from .filters import IngredientFilter, RecipeFilter
 from .paginators import PageNumberPaginatorModified
@@ -48,11 +49,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
-
-        # Get the author ID from the URL
         author_id = self.kwargs.get('user_id')
-
-        # If author_id is not None, filter recipes by author
         if author_id:
             author = get_object_or_404(CustomUser, id=author_id)
             queryset = queryset.filter(author=author)
