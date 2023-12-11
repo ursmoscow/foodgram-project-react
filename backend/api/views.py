@@ -32,9 +32,8 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
-                       filters.OrderingFilter]
-    filter_class = RecipeFilter
+    filter_backends = DjangoFilterBackend
+    filterset_class = RecipeFilter
     pagination_class = PageNumberPaginatorModified
     permission_classes = [AdminOrAuthorOrReadOnly, ]
 
@@ -50,9 +49,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
-        author_id = self.kwargs.get('user_id')
-        if author_id:
-            queryset = queryset.filter(author__id=author_id)
+        author_email = self.kwargs.get('user_id')
+
+        if author_email:
+            queryset = queryset.filter(author__email=author_email)
+
         return queryset
 
 
